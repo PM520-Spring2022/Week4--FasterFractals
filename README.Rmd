@@ -1,6 +1,15 @@
 # Speedy Newton
 
-Original code is located in R/NewtonRaphsonComplexFractal.R
+This repository is an example of how to speed up code by writing the code more carefully and then 
+taking advantager of parallel processing. The inefficiently-written original code, due to me, can be seen 
+in R/NewtonRaphsonComplexFractal.R
+
+This readme file takes you through various steps taken to make this code more efficient and then to paralelize it.
+Credit for this much nicer version of the code belongs to Emil Hvitfeldt, a member of the computational staff in Biostats.
+
+Note that this code uses R's base graphics, so it's not particularly pretty. 
+For your assignment I would recommend using this code as a base, and then editing it to use a better graphics package.
+You might also explore the use of Julia Sets or Mandelbrot sets as an alternative source of nice pictures.
 
 ## Step 1 - cleaning syntax
 
