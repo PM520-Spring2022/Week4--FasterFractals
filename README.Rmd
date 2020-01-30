@@ -1,0 +1,146 @@
+# Speedy Newton
+
+Original code is located in R/NewtonRaphsonComplexFractal.R
+
+## Step 1 - cleaning syntax
+
+First step of optimization is done by streamlining how the code is written. This has no effect on the run time, but it can greatly decrease the amount of time reading and writing the code.  
+
+Results in file 01_syntax-clean.R.
+
+## Step 2 - First run of profiling - cat
+
+We have decreased the grid size to a 100 x 100 so we can run the tests fast.
+
+We run a profiler (profile_1.Rprofvis) so see where the time is spend. We see what all the time is spend in `RootPlotter` as we expected. Next we see that the majority of the time is spend in `rbind` and `cat`.  
+
+We will start by looking at the `cat` call. There are `cat`-calls at line: 30, 31, 47, 80, 91, 94. 
+`cat` takes some input and spits it out in the console, by looking at what is being printed when we run function, we can find out what cat calls it is.
+
+```
+94 81  Number of its=  3
+```
+
+So we have two numbers followed by `Number of its=`. `Number of its=` indicates that it is cat 91. and the two numbers come from cat 80. The other cats are not being called at a the current grid size. One way to deal with the problem is to just delete the lines, however we would still like some indication of how far we are. I will start by moving the cat out of the inner for loop to line 78.
+
+A slightly more advanced method is using a ProgressBar. We have added code outside the loop and inside the loop to update it. This way we don't flood the console.
+
+We see that moving to a progress bar have removed `cat` from the profiling (profile_2.Rprofvis).
+
+The changes have been saved to 02_cat.R.  
+
+## Step 3 - Second run of profiling - rbind
+
+Next we take a look at rbind. It is only being used 1 place in the code, line 105. What is happening here is that the result of the current is appended to the end off out output. This is quite bad to do in R because of the way it handles memory, This problem is easy to deal with by pre-allocating the space of the output matrix.
+
+We add in the beginning of the function. We know that the output is going to be xsteps times ysteps plus 1 for the first value.
+
+```{r, eval=FALSE}
+ThingsToPlot <- matrix(nrow = xsteps * ysteps + 1, ncol = 5)
+ThingsToPlot[1, ] <- c(-9, -9, 'white', -9, -9)
+```
+
+with a little arithmetic we are able to find out what index we need to put into and this code is going to replace line 105
+
+```{r, eval=FALSE}
+ThingsToPlot[(i - 1) * xsteps + j + 1, ] <- c(x[i], y[j], color, Root[1], Root[2])
+```
+
+Now we are down from 3740ms to 740ms. a factor 5.
+
+The changes have been saved to 03_rbind.R.  
+
+## Step 4 - Third run of profiling - factoring.
+
+We look at the profiling so far, and we see that plotting is beginning to take 1/4 of the time. I'm going to separate the plotting function from the calculation function. This step will not give an immediate boost in speed, but will allow us to focus on optimizing calculations.
+
+The changes have been saved to 04_refactor.R.  
+
+## vectoring
+
+We run profiling again (profile_3.Rprofvis) this time the majority of the code is run inside `TwoDNewtonRaphson`. This is a good sign. Now we have the two for loops. these are in fact not needed and we can create a long list of inputs and loop over these instead of double loop. We will use sapply for this.
+
+We will be moving from code like this
+
+```{r, eval=FALSE}
+x <- seq(xmin, xmax, length.out = xsteps)
+y <- seq(ymin, ymax, length.out = ysteps)
+
+ThingsToPlot <- matrix(nrow = xsteps * ysteps + 1, ncol = 5)
+ThingsToPlot[1, ] <- c(-9, -9, 'white', -9, -9)
+
+for (i in 1:xsteps){
+  for (j in 1:ysteps){
+    ThisZ <- complex(1, x[i], y[j])
+    color <- 'black' 
+    
+    Root <- TwoDNewtonRaphson(Funcn, ThisZ, 1e-1, 100)
+    ThingsToPlot[(i - 1) * xsteps + j + 1, ] <- c(x[i], y[j], color, Root[1], Root[2])
+  }
+}
+```
+
+To something like this where we take advantage of the apply family.
+
+```{r, eval=FALSE}
+x <- seq(xmin, xmax, length.out = xsteps)
+y <- seq(ymin, ymax, length.out = ysteps)
+
+out_dat <- expand.grid(x = x, y = y)
+
+ThisZ <- complex(1, out_dat$x, out_dat$y)
+
+Root <- sapply(ThisZ,
+               FUN = TwoDNewtonRaphson,
+               func = Funcn,
+               Tolerance = 1e-1,
+               MaxNumberOfIterations = 100)
+
+out_dat$root1 <- Root[1, ]
+out_dat$root2 <- Root[2, ]
+```
+
+The result is in file 05_remove-loops.R. And the profile is in 04_profile.Rprofvis.
+
+## Parallel computing
+
+Now we have removed some of the major road blocks. Next easy thing to do is to utilize multiple cores. We are in luck because we are using the apply family which is extra easy to Parallelize.
+
+### future package
+
+To use the future package we simply add the following lines in the beginning of our script to start parallel programming
+
+```{r, eval=FALSE}
+library(future.apply)
+plan(multicore)
+```
+
+this code in the end
+
+```{r, eval=FALSE}
+plan(sequential)
+```
+
+
+, and replace `sapply` with `future_sapply`. Since using multiple cores takes some overhead will we not see a big benefit when our run time is so short compared to the overhead. Changing to a grid size of 500x500 is now quite manageable.  
+
+Code can be found in 06_future.R.  
+
+### parallel package
+
+To use the parallel package we simply add the following lines in the beginning of our script to start parallel programming
+
+```{r, eval=FALSE}
+library(parallel)
+cl <- makePSOCKcluster(2)    # be careful what number you ask for here!
+```
+
+this code in the end
+
+```{r}
+stopCluster(cl)
+```
+
+and since we are referencing to a global parameter `bRootOrIterations` we need to let the nodes be aware that it exists by including this line after it is created `clusterExport(cl, "bRootOrIterations")`.
+
+Code can be found in 07_parallel.R.
