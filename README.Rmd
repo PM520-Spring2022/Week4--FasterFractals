@@ -1,7 +1,7 @@
 # Speedy Newton
 
 This repository is an example of how to speed up code by writing the code more carefully and then 
-taking advantager of parallel processing. The inefficiently-written original code, due to me, can be seen 
+taking advantage of parallel processing. The inefficiently-written original code, due to me, can be seen 
 in R/NewtonRaphsonComplexFractal.R
 
 This readme file takes you through various steps taken to make this code more efficient and then to paralelize it.
@@ -113,7 +113,7 @@ The result is in file 05_remove-loops.R. And the profile is in 04_profile.Rprofv
 
 ## Parallel computing
 
-Now we have removed some of the major road blocks. Next easy thing to do is to utilize multiple cores. We are in luck because we are using the apply family which is extra easy to Parallelize.
+Now we have removed some of the major road blocks. Next easy thing to do is to utilize multiple cores. We are in luck because we are using the apply family which is extra easy to Parallelize. We will show two ways of doing this.
 
 ### future package
 
