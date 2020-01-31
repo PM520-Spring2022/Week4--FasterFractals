@@ -1,8 +1,10 @@
 # Speedy Newton
 
 This repository is an example of how to speed up code by writing the code more carefully and then 
-taking advantage of parallel processing. The inefficiently-written original code, due to me, can be seen 
-in R/NewtonRaphsonComplexFractal.R
+taking advantage of parallel processing. When you clone and download it, it will unpack as an R project. Open the .rproj file using
+Rstudio and then read through the Readme file.
+The inefficiently-written original code, due to me, can be seen 
+in R/NewtonRaphsonComplexFractal.R in the project R sub-folder.
 
 This readme file takes you through various steps taken to make this code more efficient and then to paralelize it.
 Credit for this much nicer version of the code belongs to Emil Hvitfeldt, a member of the computational staff in Biostats.
