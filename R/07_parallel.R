@@ -1,6 +1,15 @@
 # This is an example of how to implement the Newton-Raphson method on complex numbers
 # using R's built-in 'complex' number definition, which is written so that you can use +,-,*,/,^ in the usual way
 
+library("viridis")
+
+# These are some color palettes you can try. there are many others available.
+#palette(viridis(64))
+#palette(inferno(64))
+palette(magma(64))
+#palette(rainbow(64))
+
+
 # 1. CREATING A CLUSTER
 library(parallel)
 cl <- makePSOCKcluster(2)
