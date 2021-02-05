@@ -2,6 +2,14 @@
 # using R's built-in 'complex' number definition, which is written so that you can use +,-,*,/,^ in the usual way
 
 library(future.apply)
+library("viridis")
+
+# These are some color palettes you can try. there are many others available.
+#palette(viridis(64))
+#palette(inferno(64))
+palette(magma(64))
+#palette(rainbow(64))
+
 plan(multicore)    # this tells it to actually run in parallel   [plan(sequential) would tell it not to parallelize]
 
 # First define a function to work with - it will return two values.
