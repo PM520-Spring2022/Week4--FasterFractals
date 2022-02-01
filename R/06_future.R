@@ -117,9 +117,61 @@ root_plotter <- function(x, xmin, xmax, ymin, ymax, PtSize = 0.2) {
   # Change these to improve the quality of your pictures
 }
 
-A <- Root_calculator(F7, -1, 1, 500, -1, 1, 500)
+A <- Root_calculator(F7, -1, 1, 250, -1, 1, 250)
 
 plan(sequential)
+
+palette(magma(64))
 root_plotter(A,-1,1,-1,1,1)
+
+palette(viridis(64))
+root_plotter(A,-1,1,-1,1,1)
+
+
+palette(inferno(64))
+root_plotter(A,-1,1,-1,1,1)
+
+palette(rainbow(64))
+root_plotter(A,-1,1,-1,1,1)
+
+break
+
+
+A <- Root_calculator(F7, 0.2, 0.8, 500, 0.2, 0.8, 500)
+root_plotter(A,0.2, 0.8, 0.2, 0.8,1)
+
+palette(viridis(64))
+A <- Root_calculator(F7, 0.55, 0.75, 500, 0.4, 0.6, 500)
+root_plotter(A,0.55,0.75,0.4,0.6,1)
+
+palette(magma(256))
+A <- Root_calculator(F7, 0.58, 0.63, 500, 0.48, 0.53, 500)
+root_plotter(A,0.55,0.63,0.48,0.53,1)
+
+palette(inferno(64))
+A <- Root_calculator(F7, 0.617, 0.627, 500, 0.495, 0.505, 500)
+root_plotter(A,0.617,0.627,0.495,0.505,1)
+
+palette(rainbow(64))
+A <- Root_calculator(F7, 0.620, 0.622, 500, 0.498, 0.501, 500)
+root_plotter(A,0.620,0.622,0.498,0.501,1)
+
+palette(magma(256))
+root_plotter(A,0.620,0.622,0.498,0.501,1)
+
+palette(viridis(64))
+root_plotter(A,0.620,0.622,0.498,0.501,1)
+
+palette(rainbow(64))
+root_plotter(A,0.620,0.622,0.498,0.501,1)
+
+palette(inferno(64))
+root_plotter(A,0.620,0.622,0.498,0.501,1)
+
+root_plotter(A,-1,1,-1,1,1)
+
+
+
+
 
 
